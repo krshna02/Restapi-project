@@ -3,45 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>weather-app</title>
-    <link rel="icon" href="images/beautiful-mountains_181624-389.avif" class="rounded-full" type="image/jpg">
+    <title>Weather App</title>
+    <link rel="icon" href="images/beautiful-mountains_181624-389.avif" type="image/jpg">
+
+    <!-- Tailwind CDN - OK for development -->
     <script src="https://cdn.tailwindcss.com"></script>
 
 </head>
-<body class=" max-w-[470] px-40 py-45 rounded-2xl bg-cover bg-center min-h-screen" style="background-image: url('images/weather.jpg')" >
-    
-   <div class="   m-auto text-white text-center ">
-    <div class="search w-100% items-center flex place-content-center gap-1.5">
-        <input type="text"  class="rounded-2xl mt-2 text-black p-3 text-md" placeholder="Enter city name" spellcheck="false">
-        <button class="w-250px h-250px rounded-s" ><img src="images/search.png" class="w-[30px] rounded-lg border-2 border-black pointer"></button>
-    </div>
-    <div class="weather ">
-        <img  class=" w-170px m-auto" src="images/rain.png" >
-        <h1 class="temp text-[80px] font-[800px]">22°c</h1>
-        <h2 class="city text-[80px] font-[800px] mt-[-10px]">New Delhi</h2>
-        <div class="  details  items-center justify-between mt-[50px] px-[20px] py-[20px]">
-            <div class="col items-center flex place-content-center space-x-20   ">
-                <div class="flex gap-1">
-                    <img  class="w-[40px]" src="images/humidity.png ">
-                <div>
-                    <p class="humidity ">50%</p>
-                    <p>Humidity</p>
-                </div>
-                </div>
-                
-                <div class="col flex  ">
-                <img class=" object-left"  src="images/wind.png ">
-                <div>
 
-                    <p class="wind">15km/h</p>
-                    <p>WindSpeed</p>
+<body class="min-h-screen bg-cover bg-center flex items-center justify-center px-4"
+      style="background-image: url('images/weather.jpg')">
+
+    <div class="text-white text-center w-full max-w-[470px]">
+
+        <!-- Search -->
+        <div class="search flex items-center justify-center gap-2 mt-4">
+            <input type="text"
+                class="rounded-xl text-black p-3 text-lg w-64"
+                placeholder="Enter city name" spellcheck="false">
+
+            <button class="bg-white p-3 rounded-xl hover:scale-105 transition">
+                <img src="images/search.png" class="w-6" alt="search icon">
+            </button>
+        </div>
+
+        <!-- Weather Card -->
+        <div class="backdrop-blur-md bg-white/10 p-8 rounded-3xl mt-10">
+
+            <img class="w-[170px] mx-auto" src="images/rain.png" alt="weather icon">
+
+            <h1 class="temp text-6xl font-bold">22°C</h1>
+            <h2 class="city text-3xl font-bold -mt-2">City</h2>
+
+            <div class="details flex items-center justify-around mt-10">
+                
+                <div class="flex items-center gap-2">
+                    <img src="images/humidity.png" class="w-10" alt="humidity">
+                    <div>
+                        <p class="humidity font-semibold text-xl">--%</p>
+                        <p class="text-sm">Humidity</p>
+                    </div>
                 </div>
-                 
+
+                <div class="flex items-center gap-2">
+                    <img src="images/wind.png" class="w-10" alt="wind">
+                    <div>
+                        <p class="wind font-semibold text-xl">-- km/h</p>
+                        <p class="text-sm">Wind Speed</p>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
-    
-   </div>
+
+   
+    <!-- Chatbot Floating Button -->
+<div id="chatbot-btn"
+     class="fixed bottom-6 left-6 bg-blue-600 text-white p-4 rounded-full shadow-lg cursor-pointer hover:bg-blue-700 transition">
+    💬
+</div>
+
+<!-- Chatbot Window -->
+<div id="chatbot-box"
+     class="fixed bottom-24 left-6 w-80 bg-white text-black rounded-xl shadow-xl p-4 hidden">
+
+    <div class="flex justify-between items-center mb-3">
+        <h2 class="text-lg font-bold">AI Assistant</h2>
+        <button id="close-chat" class="text-xl font-bold">&times;</button>
+    </div>
+
+    <div id="chat-content" class="h-48 overflow-y-auto border p-2 rounded">
+        <p class="text-sm text-gray-600">Hello! How can I help you?</p>
+    </div>
+
+    <div class="mt-3 flex gap-2">
+        <input id="chat-input"
+               type="text"
+               class="flex-1 border p-2 rounded"
+               placeholder="Type message...">
+        <button id="send-chat"
+                class="bg-blue-600 text-white px-4 rounded hover:bg-blue-700">
+            Send
+        </button>
+    </div>
+</div>
+
 </body>
-<script src="weather.js"></script>
+ <!-- IMPORTANT: Script placed at bottom -->
+    <script src="weather.js"></script>
 </html>
