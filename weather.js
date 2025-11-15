@@ -30,15 +30,28 @@ async function checkWeather(city) {
 
         const data = await response.json();
 
-        // Fill UI
         document.querySelector(".city").textContent = data.name;
         document.querySelector(".temp").textContent = Math.round(data.main.temp) + "°c";
         document.querySelector(".humidity").textContent = data.main.humidity + "%";
         document.querySelector(".wind").textContent = data.wind.speed + " km/h";
 
-        // Set the correct icon
         const weatherType = data.weather[0].main;
         weatherIcon.src = iconMap[weatherType] || "images/clear.png";
+
+        // 🚀 ADD PRECAUTION QUOTES BELOW
+        const precautionText = document.querySelector(".precaution");
+
+        const quotes = {
+            Clear: "It's sunny! Stay hydrated and wear sunscreen.",
+            Clouds: "Cloudy skies. Good day to be outside but keep a light jacket.",
+            Rain: "It's raining! Carry an umbrella and avoid slippery areas.",
+            Drizzle: "Light rain outside. Drive safely and carry a raincoat.",
+            Mist: "Low visibility due to mist. Drive slow and use fog lights.",
+            Snow: "Snowy weather! Wear warm clothes and be cautious on roads.",
+            Thunderstorm: "Thunderstorms expected! Stay indoors and avoid open areas."
+        };
+
+        precautionText.textContent = quotes[weatherType] || "Stay safe and check local weather updates.";
 
     } catch (error) {
         alert("Network error. Try again.");
@@ -46,91 +59,66 @@ async function checkWeather(city) {
     }
 }
 
+
 // Button click
 searchBtn.addEventListener("click", () => {
     checkWeather(searchBox.value);
 });
+// user location
+// Auto detect user location on load
+function getUserLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
 
-const chatBtn = document.getElementById("chatbot-btn");
-const chatBox = document.getElementById("chatbot-box");
-const closeChat = document.getElementById("close-chat");
-const sendChat = document.getElementById("send-chat");
-const chatInput = document.getElementById("chat-input");
-const chatContent = document.getElementById("chat-content");
+                try {
+                    const response = await fetch(
+                        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apikey}`
+                    );
 
-// OpenAI API KEY
-const OPENAI_KEY = "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";
+                    if (!response.ok) {
+                        console.error("Failed to fetch location-based weather");
+                        return;
+                    }
 
-// Show Chat
-chatBtn.addEventListener("click", () => {
-    chatBox.classList.remove("hidden");
-});
+                    const data = await response.json();
 
-// Close Chat
-closeChat.addEventListener("click", () => {
-    chatBox.classList.add("hidden");
-});
+                    // Fill UI
+                    document.querySelector(".city").textContent = data.name;
+                    document.querySelector(".temp").textContent = Math.round(data.main.temp) + "°c";
+                    document.querySelector(".humidity").textContent = data.main.humidity + "%";
+                    document.querySelector(".wind").textContent = data.wind.speed + " km/h";
 
-// Add message in UI
-function addChat(message, isUser) {
-    const p = document.createElement("p");
-    p.className = isUser
-        ? "text-right text-blue-600 my-1"
-        : "text-gray-700 my-1";
-    p.textContent = message;
-    chatContent.appendChild(p);
-    chatContent.scrollTop = chatContent.scrollHeight;
-}
+                    const weatherType = data.weather[0].main;
+                    weatherIcon.src = iconMap[weatherType] || "images/clear.png";
 
-// Send to OpenAI
-async function sendToOpenAI(message) {
-    addChat("Typing...", false);
+                    // Precautions
+                    const precautionText = document.querySelector(".precaution");
+                    const quotes = {
+                        Clear: "It's sunny! Stay hydrated and wear sunscreen.",
+                        Clouds: "Cloudy skies. Carry a light jacket.",
+                        Rain: "It's raining! Carry an umbrella and avoid slippery areas.",
+                        Drizzle: "Light rain outside. Drive safely.",
+                        Mist: "Low visibility. Drive slow and use fog lights.",
+                        Snow: "Wear warm clothes and be careful of icy roads.",
+                        Thunderstorm: "Stay indoors! Avoid open areas."
+                    };
+                    precautionText.textContent = quotes[weatherType] || "Stay safe and check local updates.";
 
-    try {
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${OPENAI_KEY}`
+                } catch (error) {
+                    console.error(error);
+                }
             },
-            body: JSON.stringify({
-                model: "gpt-4o-mini",   // you can change to gpt-4o or gpt-4.1
-                messages: [
-                    { role: "system", content: "You are a helpful AI assistant." },
-                    { role: "user", content: message }
-                ]
-            })
-        });
 
-        // Remove "Typing..."
-        chatContent.lastChild.remove();
-
-        const data = await response.json();
-        const aiMessage = data.choices[0].message.content;
-        addChat(aiMessage, false);
-
-    } catch (error) {
-        chatContent.lastChild.remove();
-        addChat("Error: Could not connect to AI.", false);
-        console.error(error);
+            (error) => {
+                console.warn("Location permission denied. Defaulting to manual entry.");
+            }
+        );
+    } else {
+        alert("Geolocation not supported in this browser.");
     }
 }
-
-// Send Message on Button Click
-sendChat.addEventListener("click", async () => {
-    const msg = chatInput.value.trim();
-    if (!msg) return;
-
-    addChat(msg, true);
-    chatInput.value = "";
-
-    await sendToOpenAI(msg);
-});
-
-// Send with Enter Key
-chatInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-        sendChat.click();
-    }
-});
-
+// Auto-run location weather on page load
+getUserLocation();
